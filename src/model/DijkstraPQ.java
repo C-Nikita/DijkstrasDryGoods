@@ -1,11 +1,31 @@
 package model;
 import javafx.util.Pair;
+
+import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.PriorityQueue;
+import java.util.Set;
 
 public class DijkstraPQ {
+	/**
+	 * This should be noted that I understand that I 
+	 * have numerous examples of bad programming 
+	 * practices here; I am attempting to get as 
+	 * much done and tested as fast as possible.
+	 * 
+	 * This unfortunately means I'm breaking some
+	 * protocols.
+	 * 
+	 * 
+	 * */
+	
     static class Edge {
+    	/**
+    	 * Important class for the route finding algorithm
+    	 * 
+    	 * 
+    	 * */
         int source;
         int destination;
         int weight;
@@ -13,16 +33,132 @@ public class DijkstraPQ {
         
 
         public Edge(int source, int destination, int weight) {
-            this.source = source;
-            this.destination = destination;
-            this.weight = weight;
+            this.setSource(source);
+            this.setDestination(destination);
+            this.setWeight(weight);
         }
-    }
 
+
+
+		public int getSource() {
+			return source;
+		}
+
+		public void setSource(int source) {
+			this.source = source;
+		}
+
+
+
+		public int getDestination() {
+			return destination;
+		}
+
+
+
+		public void setDestination(int destination) {
+			this.destination = destination;
+		}
+
+
+
+		public int getWeight() {
+			return weight;
+		}
+
+
+
+		public void setWeight(int weight) {
+			this.weight = weight;
+		}
+        
+    }
+    static class OrderLocation{
+    	/**
+    	 * portion related to the Edge class from
+    	 * The Route Finding method
+    	 * Part of the returned ordered list
+    	 * for delivery orders
+    	 * 
+    	 * */
+    	Edge location;
+    	
+    	
+    	public OrderLocation(Edge loc) {
+    		this.setOrderLocation(loc);
+    	}
+    	public void setOrderLocation(Edge oloc) {
+    		this.location = oloc;
+    	}
+    	public Edge getOrderNumber() {
+    		return this.location;
+    		
+    	}
+    	
+    }
+    static class OrderNumber{
+    	/**
+    	 * Order Number portion
+    	 * Part of the returned ordered list
+    	 * for delivery orders
+    	 * 
+    	 * */
+    	String orderNumber;
+    	//Set<String, orderLocation>[] orderList;
+    	
+    	public OrderNumber(String oNumber) {
+    		this.setOrderNumber(oNumber);
+    		//this.orderLocation= oLoc;
+    	}
+    	public void setOrderNumber(String oNum) {
+    		this.orderNumber = oNum;
+    	}
+    	public String getOrderNumber() {
+    		return this.orderNumber;
+    		
+    	}
+    	
+    }
+    //<OrderNumber,OrderLocation>
+    static class Order {
+    	OrderNumber oNum;
+    	OrderLocation oLoc;
+    	
+    	public Order(OrderNumber num,OrderLocation loc) {
+    		
+    	}
+
+		public OrderNumber getoNum() {
+			return oNum;
+		}
+
+		public void setoNum(OrderNumber oNum) {
+			this.oNum = oNum;
+		}
+
+		public OrderLocation getoLoc() {
+			return oLoc;
+		}
+
+		public void setoLoc(OrderLocation oLoc) {
+			this.oLoc = oLoc;
+		}
+    	
+    	
+    }
+    
     static class Graph {
+    	/**
+    	 * Important class for the route finding algorithm
+    	 * Adjustments have been made to keep track
+    	 * of Orders for returning to customer/service team
+    	 * 
+    	 * */
         int vertices,listSize;
         final int LOC_COUNT=1;
         LinkedList<Edge>[] orderSequence;
+        //PriorityQueue <Pair <OrderNumber,OrderLocation>> orderthing;
+        
         //final int MEMORY_SIZE = 2; // extending length of Adjacency List
         //int listSize; //= vertices*MEMORY_SIZE;
         //vertices =*MEMORY_SIZE;
@@ -32,6 +168,10 @@ public class DijkstraPQ {
             this.vertices = vertices;
             this.listSize = vertices;//*MEMORY_SIZE;
             adjacencylist = new LinkedList[vertices];
+            orderSequence = new LinkedList[vertices];
+            //vertices, new Comparator<Pair<Integer, Integer>
+            
+            //this.order = new PriorityQueue<>();
             //initialize adjacency lists for all the vertices
             for (int i = 0; i <vertices ; i++) {
                 adjacencylist[i] = new LinkedList<>();
@@ -78,10 +218,14 @@ public class DijkstraPQ {
             pq.offer(p0);
 
             //while priority queue is not empty
+            // Graph's Order priority queue is filled with members to be sorted
+            
             while(!pq.isEmpty()){
                 //extract the min
                 Pair<Integer, Integer> extractedPair = pq.poll();
-
+                
+                 
+                //this.order.add(extractedPair);
                 //extracted vertex
                 int extractedVertex = extractedPair.getValue();
                 if(SPT[extractedVertex]==false) {
@@ -109,6 +253,7 @@ public class DijkstraPQ {
                 }
             }
             //print Shortest Path Tree
+            
             printDijkstra(distance, sourceVertex);
         }
 
@@ -138,3 +283,8 @@ public class DijkstraPQ {
         }
     }
 }
+
+
+
+
+
