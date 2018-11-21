@@ -3,6 +3,14 @@
   <groupId>DijkstrasDryGoods</groupId>
   <artifactId>DijkstrasDryGoods</artifactId>
   <version>0.0.1-SNAPSHOT</version>
+  <dependencies>
+  <!-- https://mvnrepository.com/artifact/org.javatuples/javatuples -->
+	<dependency>
+    	<groupId>org.javatuples</groupId>
+    	<artifactId>javatuples</artifactId>
+    	<version>1.2</version>
+	</dependency>
+  </dependencies>
   <packaging>war</packaging>
   <build>
     <sourceDirectory>src</sourceDirectory>
@@ -23,5 +31,8 @@
         </configuration>
       </plugin>
     </plugins>
+    <dependencies>
+    
+    </dependencies>
   </build>
 </project>

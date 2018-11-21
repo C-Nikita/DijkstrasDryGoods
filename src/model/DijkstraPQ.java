@@ -2,10 +2,16 @@ package model;
 import javafx.util.Pair;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Set;
+import java.util.Vector;
+import java.util.stream.Stream;
+import java.util.stream.*;
+import org.javatuples.Triplet; 
 
 public class DijkstraPQ {
 	/**
@@ -17,6 +23,10 @@ public class DijkstraPQ {
 	 * This unfortunately means I'm breaking some
 	 * protocols.
 	 * 
+	 * Implementation based on code provided from:
+	 * Tutorial Horizon, Algorithms
+	 * algorithms.tutorialhorizon.com
+	 * https://algorithms.tutorialhorizon.com/dijkstras-shortest-path-algorithm-spt-adjacency-list-and-priority-queue-java-implementation/
 	 * 
 	 * */
 	
@@ -71,6 +81,13 @@ public class DijkstraPQ {
 		public void setWeight(int weight) {
 			this.weight = weight;
 		}
+
+
+
+		@Override
+		public String toString() {
+			return "Edge [source=" + String.valueOf(this.getSource()) + ", destination=" + String.valueOf(this.getDestination()) + ", weight=" + String.valueOf(this.getWeight()) + "]";
+		}
         
     }
     static class OrderLocation{
@@ -90,7 +107,7 @@ public class DijkstraPQ {
     	public void setOrderLocation(Edge oloc) {
     		this.location = oloc;
     	}
-    	public Edge getOrderNumber() {
+    	public Edge getOrderLocation() {
     		return this.location;
     		
     	}
@@ -117,14 +134,30 @@ public class DijkstraPQ {
     		return this.orderNumber;
     		
     	}
+    	@Override
+    	public String toString() {
+    		return this.getOrderNumber();
+    	}
     	
     }
     //<OrderNumber,OrderLocation>
     static class Order {
     	OrderNumber oNum;
     	OrderLocation oLoc;
+    	int distance; //position in delivery
+    	
+    	//debugging, do not use
+    	/**
+    	public String toString() {
+    		String output="";
+    		output= "Order: "+String.valueOf(this.getoNum().toString())+" Location: "+String.valueOf(this.getoLoc().getOrderLocation().toString())+" ";
+    		
+    		return output;
+    	}*/
     	
     	public Order(OrderNumber num,OrderLocation loc) {
+    		this.setoNum(num);
+    		this.setoLoc(loc);
     		
     	}
 
@@ -142,6 +175,18 @@ public class DijkstraPQ {
 
 		public void setoLoc(OrderLocation oLoc) {
 			this.oLoc = oLoc;
+		}
+
+		public int getDistance() {
+			return distance;
+		}
+
+		public void setDistance(int distance) {
+			this.distance = distance;
+		}
+		@Override
+		public String toString() {
+			return "Order Number: "+ this.getoNum()+" Location: "+this.getoLoc().getOrderLocation().toString()+" ";
 		}
     	
     	
@@ -164,11 +209,14 @@ public class DijkstraPQ {
         //vertices =*MEMORY_SIZE;
         //LinkedList<Edge>[] adjacencylist;
         LinkedList<Edge>[] adjacencylist;
+        Vector<Order>orders; 
+        //LinkedList<Order>[] orders;
         Graph(int vertices) {
             this.vertices = vertices;
             this.listSize = vertices;//*MEMORY_SIZE;
             adjacencylist = new LinkedList[vertices];
             orderSequence = new LinkedList[vertices];
+            orders = new Vector(); 
             //vertices, new Comparator<Pair<Integer, Integer>
             
             //this.order = new PriorityQueue<>();
@@ -177,16 +225,30 @@ public class DijkstraPQ {
                 adjacencylist[i] = new LinkedList<>();
             }
         }
-
-        public void addEdge(int source, int destination, int weight) {
-        	
-            Edge edge = new Edge(source, destination, weight);
-            adjacencylist[source].addFirst(edge);
-            System.out.println("Size of Adjacency List: "+adjacencylist.length);
-            
-            edge = new Edge(destination, source, weight);
-            adjacencylist[destination].addFirst(edge); //for undirected graph
+        public void addOrder(String orderNumber,int source, int destination, int weight) {
+        //addEdge(source,destination,weight);
+        Edge edge = new Edge(source,destination,weight);
+        OrderNumber oNum = new OrderNumber(orderNumber);
+        OrderLocation oLoc = new OrderLocation(edge);
+        Order order = new Order (oNum,oLoc);
+        //System.out.println(oNum.toString());
+        //System.out.println(oLoc.getOrderLocation().toString());
+        orders.add(order);
+        //System.out.println("Order Added: "+ orders.lastElement().toString());
+        //addEdge(source,destination,weight);
+        addEdge(edge);
         }
+
+        //public void addEdge(int source, int destination, int weight) {
+        public void addEdge(Edge edge) {
+            //Edge edge = new Edge(source, destination, weight);
+            adjacencylist[edge.getSource()].addFirst(edge);
+            
+            //System.out.println("Size of Adjacency List: "+adjacencylist.length);
+            edge = new Edge(edge.getDestination(), edge.getSource(), edge.getWeight());
+            adjacencylist[edge.getDestination()].addFirst(edge); //for undirected graph
+        }
+        
 
         public void find_Route(int sourceVertex){
 
@@ -200,10 +262,14 @@ public class DijkstraPQ {
                 distance[i] = Integer.MAX_VALUE;
                 
             }
+            /**
+             * Attempting to use triplet for order indexing during Route Find
+             * */
             //Initialize priority queue
             //override the comparator to do the sorting based keys
             PriorityQueue<Pair<Integer, Integer>> pq = new PriorityQueue<>(vertices, new Comparator<Pair<Integer, Integer>>() {
-                @Override
+            //PriorityQueue<Triplet<Integer, Integer>> pq = new PriorityQueue<>(vertices, new Comparator<Pair<Integer, Integer>>() {   
+            @Override
                 public int compare(Pair<Integer, Integer> p1, Pair<Integer, Integer> p2) {
                     //sort using distance values
                     int key1 = p1.getKey();
@@ -255,6 +321,28 @@ public class DijkstraPQ {
             //print Shortest Path Tree
             
             printDijkstra(distance, sourceVertex);
+            for(Order o: orders) {
+            System.out.println(" Order: "+o );
+            }
+           /** for (Order o: orders) {
+            System.out.println("Orders: "+ o.getoNum().toString());
+            }*/
+            /**Attempting to work with Streams, so far bad idea
+            				List<Order> outGoing=
+            					orders
+            					.build()
+            					.collect(Collectors.toList());
+            				outGoing.a
+            				//outGoing.forEach(order->System.out.println(order.toString()));
+            				for (Order o : orders.build().collect(Collectors.)) {
+            					System.out.println(" Order Number: "
+            				+o.getoNum()
+            				+" "
+            				+o.getoLoc());
+            				}
+            */
+            					
+            
         }
 
         public void printDijkstra(int[] distance, int sourceVertex){
@@ -272,14 +360,13 @@ public class DijkstraPQ {
         public static void main(String[] args) {
             int vertices = 6;
             Graph graph = new Graph(vertices);
-            graph.addEdge(0, 1, 4);
+        /**    graph.addEdge(0, 1, 4);
             graph.addEdge(0, 2, 3);
             graph.addEdge(1, 2, 1);
             graph.addEdge(1, 3, 2);
             graph.addEdge(2, 3, 4);
             graph.addEdge(3, 4, 2);
-            graph.addEdge(4, 5, 6);
-            graph.find_Route(0);
+            graph.addEdge(4, 5, 6);*/
         }
     }
 }

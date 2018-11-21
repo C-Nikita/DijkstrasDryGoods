@@ -39,20 +39,29 @@ public class Deliveries extends Graph{
         int vertices,counter = 0;
         int source,destination,weight;
         final int source_vertex =0;
+        vertices=7;
+        String parse,oNum="";
+        Deliveries graph = new Deliveries(vertices);
         //final int incrementer =5;
-        String parse="";
+        /**
+       
         final String quit="quit!";
         Scanner input = new Scanner(System.in);
         System.out.println("How many deliveries?");
         System.out.println("Reminder: Minimum deliveries are three.");
         parse = input.nextLine();
         vertices = Integer.valueOf(parse);
-        Deliveries graph = new Deliveries(vertices);
+        
        
         
         //Testing Add Edge and route finding algorithm
         do{
         	System.out.println("Location: "+(counter+1));
+        	
+        	System.out.println("Enter the Order Number: \n" );
+        	parse = input.nextLine();
+        	oNum = parse;
+        	
         	System.out.println("Enter the source: \n" );
         	parse = input.nextLine();
         	
@@ -68,11 +77,22 @@ public class Deliveries extends Graph{
                 weight = Integer.valueOf(parse);
                 
         		//graphInput.addEdge(source, destination, weight);
-                graph.addEdge(source, destination, weight);
+                graph.addOrder(oNum,source, destination, weight);
         		//graphInput.find_Route(source_vertex);
                 counter++;
         }while(counter<vertices);
         //graphInput.find_Route(source_vertex);
+         * 
+         */
+        //graph.addOrder(oNum,source, destination, weight);
+        graph.addOrder("1",0, 1, 4);
+        graph.addOrder("2",0, 2, 3);
+        graph.addOrder("3",0, 2, 1);
+        graph.addOrder("4",0, 3, 2);
+        graph.addOrder("5",0, 3, 4);
+        graph.addOrder("6",0, 4, 2);
+        graph.addOrder("7",0, 5, 6);
+
         graph.find_Route(source_vertex);
         /*
         graph.addEdge(0, 1, 4);
