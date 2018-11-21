@@ -208,7 +208,8 @@ public class DijkstraPQ {
         //int listSize; //= vertices*MEMORY_SIZE;
         //vertices =*MEMORY_SIZE;
         //LinkedList<Edge>[] adjacencylist;
-        LinkedList<Edge>[] adjacencylist;
+        //LinkedList<Edge>[] adjacencylist;
+        LinkedList<Order>[] adjacencylist;
         Vector<Order>orders; 
         //LinkedList<Order>[] orders;
         Graph(int vertices) {
@@ -236,17 +237,30 @@ public class DijkstraPQ {
         orders.add(order);
         //System.out.println("Order Added: "+ orders.lastElement().toString());
         //addEdge(source,destination,weight);
-        addEdge(edge);
+        addEdge(order);
         }
 
         //public void addEdge(int source, int destination, int weight) {
-        public void addEdge(Edge edge) {
+        /**public void addEdge(Edge edge) {
             //Edge edge = new Edge(source, destination, weight);
             adjacencylist[edge.getSource()].addFirst(edge);
             
             //System.out.println("Size of Adjacency List: "+adjacencylist.length);
             edge = new Edge(edge.getDestination(), edge.getSource(), edge.getWeight());
             adjacencylist[edge.getDestination()].addFirst(edge); //for undirected graph
+        }*/
+        public void addEdge(Order order) {
+        	/**Using an Adjacency List using type Order for maintaining connection to order number
+        	 * */
+            //Edge edge = new Edge(source, destination, weight);
+            adjacencylist[order.getoLoc().getOrderLocation().getSource()].addFirst(order);
+            
+            //System.out.println("Size of Adjacency List: "+adjacencylist.length);
+            OrderNumber tracking = new OrderNumber(order.getoNum().getOrderNumber());
+            Edge edge= new Edge(order.getoLoc().getOrderLocation().getDestination(),order.getoLoc().getOrderLocation().getSource(),order.getoLoc().getOrderLocation().getWeight());
+            OrderLocation location = new OrderLocation(edge);
+            order = new Order(tracking,location );
+            adjacencylist[edge.getDestination()].addFirst(order); //for undirected graph
         }
         
 
@@ -267,63 +281,82 @@ public class DijkstraPQ {
              * */
             //Initialize priority queue
             //override the comparator to do the sorting based keys
-            PriorityQueue<Pair<Integer, Integer>> pq = new PriorityQueue<>(vertices, new Comparator<Pair<Integer, Integer>>() {
-            //PriorityQueue<Triplet<Integer, Integer>> pq = new PriorityQueue<>(vertices, new Comparator<Pair<Integer, Integer>>() {   
+           // PriorityQueue<Pair<Integer, Integer>> pq = new PriorityQueue<>(vertices, new Comparator<Pair<Integer, Integer>>() {
+            PriorityQueue<Triplet<Integer, Integer, String>> pq = new PriorityQueue<>(vertices, new Comparator<Triplet<Integer, Integer,String>>() {   
             @Override
-                public int compare(Pair<Integer, Integer> p1, Pair<Integer, Integer> p2) {
+                public int compare(Triplet<Integer, Integer, String> p1, Triplet<Integer, Integer,String> p2) {
                     //sort using distance values
-                    int key1 = p1.getKey();
-                    int key2 = p2.getKey();
+                    int key1 = p1.getValue0();
+                    int key2 = p2.getValue0();
                     return key1-key2;
                 }
             });
             //create the pair for for the first index, 0 distance 0 index
             distance[0] = 0;
-            Pair<Integer, Integer> p0 = new Pair<>(distance[0],0);
+            Triplet<Integer, Integer,String> p0 = new Triplet<>(distance[0],0,"Source");
             //add it to pq
             pq.offer(p0);
-
+            /**Debug variable to verify that algorithm is running
+             * 
+             * 
+             * */
+            Triplet<Integer, Integer,String> debug;
             //while priority queue is not empty
             // Graph's Order priority queue is filled with members to be sorted
-            
+        
             while(!pq.isEmpty()){
                 //extract the min
-                Pair<Integer, Integer> extractedPair = pq.poll();
-                
-                 
+                Triplet<Integer, Integer,String> extractedPair = pq.poll();
+                debug=extractedPair;
+                 System.out.println(debug.getValue2());
                 //this.order.add(extractedPair);
                 //extracted vertex
-                int extractedVertex = extractedPair.getValue();
+                int extractedVertex = extractedPair.getValue1();
+                //String extractedNumber = extractedPair.getValue2();
                 if(SPT[extractedVertex]==false) {
                     SPT[extractedVertex] = true;
 
                     //iterate through all the adjacent vertices and update the keys
-                    LinkedList<Edge> list = adjacencylist[extractedVertex];
+                    LinkedList<Order> list = adjacencylist[extractedVertex];
                     for (int i = 0; i < list.size(); i++) {
-                        Edge edge = list.get(i);
-                        int destination = edge.destination;
+                        /**Edge edge = list.get(i);*/
+                        Order order = list.get(i);
+                        int destination = order.getoLoc().getOrderLocation().getDestination();
+                        String orderNumber = order.getoNum().getOrderNumber();
                         //only if edge destination is not present in mst
                         if (SPT[destination] == false) {
                             ///check if distance needs an update or not
                             //means check total weight from source to vertex_V is less than
                             //the current distance value, if yes then update the distance
-                            int newKey =  distance[extractedVertex] + edge.weight ;
+                            int newKey =  distance[extractedVertex] + order.getoLoc().getOrderLocation().getWeight() ;
                             int currentKey = distance[destination];
+                            String currentOrder = orderNumber;
+                            //System.out.println("Distance: "+distance[destination]);
+                            //System.out.println("Distance of new Key: "+newKey);
+                            System.out.println("PQ: "+pq.toString());
                             if(currentKey>newKey){
-                                Pair<Integer, Integer> p = new Pair<>(newKey, destination);
+                                Triplet<Integer, Integer,String> p = new Triplet<>(newKey, destination,currentOrder);
                                 pq.offer(p);
+                                System.out.println("PQ set: "+pq.toString());
+                                
                                 distance[destination] = newKey;
+                                
+                                //System.out.println("Distance of new Key: "+distance[newKey]);
                             }
                         }
                     }
                 }
             }
             //print Shortest Path Tree
-            
+ 
             printDijkstra(distance, sourceVertex);
-            for(Order o: orders) {
-            System.out.println(" Order: "+o );
-            }
+         
+           /** while(!pq.isEmpty()) {
+            	System.out.println(pq.toString());
+            }*/
+            //for(Order o: orders) {
+            //System.out.println(" Order: "+o );
+            //}
            /** for (Order o: orders) {
             System.out.println("Orders: "+ o.getoNum().toString());
             }*/

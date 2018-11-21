@@ -85,13 +85,13 @@ public class Deliveries extends Graph{
          * 
          */
         //graph.addOrder(oNum,source, destination, weight);
-        graph.addOrder("1",0, 1, 4);
-        graph.addOrder("2",0, 2, 3);
-        graph.addOrder("3",0, 2, 1);
-        graph.addOrder("4",0, 3, 2);
-        graph.addOrder("5",0, 3, 4);
-        graph.addOrder("6",0, 4, 2);
-        graph.addOrder("7",0, 5, 6);
+        graph.addOrder("one",0, 1, 4);
+        graph.addOrder("two",0, 2, 3);
+        graph.addOrder("three",0, 2, 1);
+        graph.addOrder("four",0, 3, 2);
+        graph.addOrder("five",0, 3, 4);
+        graph.addOrder("six",0, 4, 2);
+        graph.addOrder("seven",0, 5, 6);
 
         graph.find_Route(source_vertex);
         /*
