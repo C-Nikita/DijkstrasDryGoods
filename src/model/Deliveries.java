@@ -1,11 +1,14 @@
 package model;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.Vector;
 
 import model.DijkstraPQ.Edge;
 import model.DijkstraPQ.Graph;
+import model.DijkstraPQ.Order;
 
 public class Deliveries extends Graph{
 	//Vertices here are known as Locations
@@ -33,6 +36,10 @@ public class Deliveries extends Graph{
 		
 		
 		// TODO Auto-generated constructor stub
+	}
+	public static void sortSequence(Vector<Order> sequenceIn){
+		Collections.sort(sequenceIn, sequenceIn.);
+		
 	}
 	
 	public static void main(String [] args) {
@@ -85,6 +92,7 @@ public class Deliveries extends Graph{
          * 
          */
         //graph.addOrder(oNum,source, destination, weight);
+        
         graph.addOrder("one",0, 1, 4);
         graph.addOrder("two",0, 2, 3);
         graph.addOrder("three",0, 2, 1);
@@ -94,6 +102,18 @@ public class Deliveries extends Graph{
         graph.addOrder("seven",0, 5, 6);
 
         graph.find_Route(source_vertex);
+        Deliveries graph2 = new Deliveries(vertices);
+        
+
+        graph2.addOrder("five",0, 3, 4);
+        graph2.addOrder("six",0, 4, 2);
+        graph2.addOrder("seven",0, 5, 6);
+        graph2.addOrder("one",0, 1, 4);
+        graph2.addOrder("two",0, 2, 3);
+        graph2.addOrder("three",0, 2, 1);
+        graph2.addOrder("four",0, 3, 2);
+        graph2.find_Route(source_vertex);
+
         /*
         graph.addEdge(0, 1, 4);
         graph.addEdge(0, 2, 3);

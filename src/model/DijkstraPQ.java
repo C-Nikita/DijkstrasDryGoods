@@ -3,6 +3,7 @@ import javafx.util.Pair;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
@@ -39,6 +40,7 @@ public class DijkstraPQ {
         int source;
         int destination;
         int weight;
+        //int distance;
         
         
 
@@ -141,10 +143,10 @@ public class DijkstraPQ {
     	
     }
     //<OrderNumber,OrderLocation>
-    static class Order {
+    static class Order implements Comparable<Order>{
     	OrderNumber oNum;
     	OrderLocation oLoc;
-    	int distance; //position in delivery
+    	Integer distance; //position in delivery
     	
     	//debugging, do not use
     	/**
@@ -160,6 +162,9 @@ public class DijkstraPQ {
     		this.setoLoc(loc);
     		
     	}
+        public int compareTo(Order sequence) {
+            return distance.compareTo(sequence.distance);
+        }
 
 		public OrderNumber getoNum() {
 			return oNum;
@@ -177,7 +182,7 @@ public class DijkstraPQ {
 			this.oLoc = oLoc;
 		}
 
-		public int getDistance() {
+		public Integer getDistance() {
 			return distance;
 		}
 
@@ -201,7 +206,7 @@ public class DijkstraPQ {
     	 * */
         int vertices,listSize;
         final int LOC_COUNT=1;
-        LinkedList<Edge>[] orderSequence;
+        Vector<Order> orderSequence;
         //PriorityQueue <Pair <OrderNumber,OrderLocation>> orderthing;
         
         //final int MEMORY_SIZE = 2; // extending length of Adjacency List
@@ -216,7 +221,7 @@ public class DijkstraPQ {
             this.vertices = vertices;
             this.listSize = vertices;//*MEMORY_SIZE;
             adjacencylist = new LinkedList[vertices];
-            orderSequence = new LinkedList[vertices];
+            orderSequence = new Vector();
             orders = new Vector(); 
             //vertices, new Comparator<Pair<Integer, Integer>
             
@@ -263,6 +268,7 @@ public class DijkstraPQ {
             adjacencylist[edge.getDestination()].addFirst(order); //for undirected graph
         }
         
+        //public static Vector<Orders> sortSequence(vector<Orders> sequenceIn)
 
         public void find_Route(int sourceVertex){
 
@@ -300,15 +306,15 @@ public class DijkstraPQ {
              * 
              * 
              * */
-            Triplet<Integer, Integer,String> debug;
+            //Triplet<Integer, Integer,String> debug;
             //while priority queue is not empty
             // Graph's Order priority queue is filled with members to be sorted
         
             while(!pq.isEmpty()){
                 //extract the min
                 Triplet<Integer, Integer,String> extractedPair = pq.poll();
-                debug=extractedPair;
-                 System.out.println(debug.getValue2());
+                //debug=extractedPair;
+                 //System.out.println(debug.getValue2());
                 //this.order.add(extractedPair);
                 //extracted vertex
                 int extractedVertex = extractedPair.getValue1();
@@ -336,9 +342,10 @@ public class DijkstraPQ {
                             System.out.println("PQ: "+pq.toString());
                             if(currentKey>newKey){
                                 Triplet<Integer, Integer,String> p = new Triplet<>(newKey, destination,currentOrder);
+                                order.setDistance(newKey);
                                 pq.offer(p);
                                 System.out.println("PQ set: "+pq.toString());
-                                
+                                orderSequence.addElement(order);
                                 distance[destination] = newKey;
                                 
                                 //System.out.println("Distance of new Key: "+distance[newKey]);
@@ -348,7 +355,10 @@ public class DijkstraPQ {
                 }
             }
             //print Shortest Path Tree
- 
+            /*Sort Order Sequence list by distances by calling Java.Util.Collections sort() method*/
+            /*Honestly, this should be its own method, if not helper method to Graph.*/
+            /**/
+            Collections.sort(orderSequence);
             printDijkstra(distance, sourceVertex);
          
            /** while(!pq.isEmpty()) {
@@ -385,9 +395,20 @@ public class DijkstraPQ {
             	//For original Dijkstra output:
                 //System.out.println("Source Vertex: " + sourceVertex + " to vertex " +   + (i+this.LOC_COUNT) +
                 //        " distance: " + distance[i]);
+            	//this seems to be wrong, lists are not updated.
                 System.out.println("Distance from center to location: " +   + (i+this.LOC_COUNT) +
                         " distance: " + distance[i]);
-            }
+                
+                System.out.println(this.orders.elementAt(i));
+                System.out.println(this.orders.elementAt(i).getoNum().getOrderNumber());
+                System.out.println(this.orders.elementAt(i).getDistance());
+
+
+
+            }            
+            System.out.println("Order Sequence Vector: ");   
+            System.out.println(this.orderSequence.toString());
+            
         }
 
         public static void main(String[] args) {
